@@ -9,5 +9,6 @@ public class Team : AuditBase
     public DateTime FoundedDate { get; set; }
 
     // Navigation Property - Colección de jugadores
-    public ICollection<Player> Players { get; set; } = new List<Player>();
+    public ICollection<Player> Players { get; set; } = [];
+    public ICollection<TournamentTeam> TournamentTeams { get; set; } = [];
 }

@@ -10,15 +10,28 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         // Team mappings
-        CreateMap<TeamRequestDTO, Team>();
-        CreateMap<Team, TeamResponseDTO>();
+        _ = CreateMap<TeamRequestDTO, Team>();
+        _ = CreateMap<Team, TeamResponseDTO>();
 
         // Player mappings
-        CreateMap<PlayerRequestDTO, Player>();
-        CreateMap<Player, PlayerResponseDTO>()
+        _ = CreateMap<PlayerRequestDTO, Player>();
+        _ = CreateMap<Player, PlayerResponseDTO>()
             .ForMember(
                 dest => dest.TeamName,
                 opt => opt.MapFrom(src => src.Team.Name));
+
+        // Referee mappings
+        _ = CreateMap<RefereeRequestDTO, Referee>();
+        _ = CreateMap<Referee, RefereeResponseDTO>();
+
+        // Tournament mappings
+        _ = CreateMap<TournamentRequestDTO, Tournament>();
+        _ = CreateMap<Tournament, TournamentResponseDTO>()
+            .ForMember(
+                dest => dest.TeamsCount,
+                opt => opt.MapFrom(src =>
+                    src.TournamentTeams != null ? src.TournamentTeams.Count : 0));
+
     }
 }
 
