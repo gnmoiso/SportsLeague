@@ -5,6 +5,7 @@ using SportsLeague.Domain.Interfaces.Repositories;
 using SportsLeague.Domain.Interfaces.Services;
 using SportsLeague.Domain.Services;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ── Entity Framework Core ──
@@ -27,7 +28,7 @@ builder.Services.AddScoped<IRefereeService, RefereeService>();
 builder.Services.AddScoped<ITournamentService, TournamentService>();
 
 // ── AutoMapper ──
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
+builder.Services.AddAutoMapper(config => { }, typeof(Program));
 
 // ── Controllers ──
 builder.Services.AddControllers();

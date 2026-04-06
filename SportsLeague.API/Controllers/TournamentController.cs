@@ -13,16 +13,13 @@ public class TournamentController : ControllerBase
 {
     private readonly ITournamentService _tournamentService;
     private readonly IMapper _mapper;
-    private readonly ILogger<TournamentController> _logger;
 
     public TournamentController(
         ITournamentService tournamentService,
-        IMapper mapper,
-        ILogger<TournamentController> logger)
+        IMapper mapper)
     {
         _tournamentService = tournamentService;
         _mapper = mapper;
-        _logger = logger;
     }
 
     [HttpGet]
@@ -38,6 +35,7 @@ public class TournamentController : ControllerBase
         var tournament = await _tournamentService.GetByIdAsync(id);
         if (tournament == null)
             return NotFound(new { message = $"Torneo con ID {id} no encontrado" });
+
         return Ok(_mapper.Map<TournamentResponseDTO>(tournament));
     }
 
@@ -49,6 +47,7 @@ public class TournamentController : ControllerBase
             var tournament = _mapper.Map<Tournament>(dto);
             var created = await _tournamentService.CreateAsync(tournament);
             var responseDto = _mapper.Map<TournamentResponseDTO>(created);
+
             return CreatedAtAction(nameof(GetById), new { id = responseDto.Id }, responseDto);
         }
         catch (InvalidOperationException ex)

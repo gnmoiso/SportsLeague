@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -12,7 +11,7 @@ namespace SportsLeague.DataAccess.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             // Ensure Teams table exists (handle cases where DB was dropped and initial migration not applied)
-            migrationBuilder.Sql(@"IF OBJECT_ID(N'[dbo].[Teams]', N'U') IS NULL
+            _ = migrationBuilder.Sql(@"IF OBJECT_ID(N'[dbo].[Teams]', N'U') IS NULL
 BEGIN
     CREATE TABLE [Teams](
         [Id] int IDENTITY(1,1) NOT NULL PRIMARY KEY,
@@ -27,7 +26,7 @@ BEGIN
     CREATE UNIQUE INDEX IX_Teams_Name ON [Teams]([Name]);
 END");
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "Players",
                 columns: table => new
                 {
@@ -44,17 +43,17 @@ END");
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Players", x => x.Id);
+                    _ = table.PrimaryKey("PK_Players", x => x.Id);
                 });
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Players_TeamId_Number",
                 table: "Players",
                 columns: new[] { "TeamId", "Number" },
                 unique: true);
 
             // Add FK constraint only if Teams table exists to avoid migration failures when DB was reset
-            migrationBuilder.Sql(@"IF OBJECT_ID(N'[dbo].[Teams]', N'U') IS NOT NULL
+            _ = migrationBuilder.Sql(@"IF OBJECT_ID(N'[dbo].[Teams]', N'U') IS NOT NULL
 BEGIN
     IF OBJECT_ID(N'[dbo].[FK_Players_Teams_TeamId]', N'F') IS NULL
     BEGIN
@@ -69,9 +68,9 @@ END");
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "Players");
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "Teams");
         }
     }
