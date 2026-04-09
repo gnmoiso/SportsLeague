@@ -2,6 +2,7 @@
 using SportsLeague.Domain.Entities;
 using SportsLeague.Domain.Interfaces.Repositories;
 using SportsLeague.Domain.Interfaces.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace SportsLeague.Domain.Services;
 
@@ -16,13 +17,26 @@ public class SponsorService : ISponsorService
         _sponsorRepository = sponsorRepository;
     }
 
+    private void ValidateSponsorEmail(string email)
+    {
+        var emailValidator = new EmailAddressAttribute();
+        if (!emailValidator.IsValid(email))
+        {
+            _logger.LogWarning("Formato de email inválido: {Email}", email);
+            throw new InvalidOperationException($"El email '{email}' no tiene un formato válido");
+        }
+    }
+
     public async Task<Sponsor> CreateAsync(Sponsor sponsor)
     {
         try
         {
             _logger.LogInformation("Creando nuevo sponsor: {SponsorName}", sponsor.Name);
 
-            // Validar que no exista un sponsor con el mismo nombre
+            // Validación 1: Validar que el ContactEmail tenga un formato válido
+            ValidateSponsorEmail(sponsor.ContactEmail);
+
+            // Validación 2: Validar que no exista un sponsor con el mismo nombre
             var existingSponsor = await _sponsorRepository.ExistByNameAsync(sponsor.Name);
             if (existingSponsor != null)
             {
@@ -75,12 +89,26 @@ public class SponsorService : ISponsorService
         {
             _logger.LogInformation("Actualizando sponsor con ID: {SponsorId}", entity.Id);
 
-            // Validar que el sponsor existe
+            // Validación 1: Validar que el ContactEmail tenga un formato válido
+            ValidateSponsorEmail(entity.ContactEmail);
+
+            // Validación 2: Validar que el sponsor existe
             var existingSponsor = await _sponsorRepository.GetByIdAsync(entity.Id);
             if (existingSponsor == null)
             {
                 _logger.LogWarning("Sponsor con ID {SponsorId} no encontrado", entity.Id);
                 throw new InvalidOperationException($"Sponsor con ID '{entity.Id}' no existe");
+            }
+
+            // Validación 3: Validar que no se duplique el nombre (si es diferente al actual)
+            if (entity.Name != existingSponsor.Name)
+            {
+                var sponsorWithSameName = await _sponsorRepository.ExistByNameAsync(entity.Name);
+                if (sponsorWithSameName != null)
+                {
+                    _logger.LogWarning("Sponsor con nombre {SponsorName} ya existe", entity.Name);
+                    throw new InvalidOperationException($"Ya existe un sponsor con el nombre '{entity.Name}'");
+                }
             }
 
             await _sponsorRepository.UpdateAsync(entity);

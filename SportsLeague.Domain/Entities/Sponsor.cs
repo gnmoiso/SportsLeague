@@ -9,4 +9,7 @@ public class Sponsor : AuditBase
     public string? Phone { get; set; }
     public string? WebsiteUrl { get; set; }
     public SponsorCategory Category { get; set; } = SponsorCategory.Main;
+
+    // Navigation Properties
+    public ICollection<TournamentSponsor> TournamentSponsors { get; set; } = [];
 }

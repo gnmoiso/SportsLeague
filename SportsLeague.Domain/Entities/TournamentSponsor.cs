@@ -1,6 +1,4 @@
-﻿using SportsLeague.Domain.Interfaces.Repositories;
-
-namespace SportsLeague.Domain.Entities;
+﻿namespace SportsLeague.Domain.Entities;
 
 public class TournamentSponsor : AuditBase
 {
@@ -11,10 +9,4 @@ public class TournamentSponsor : AuditBase
     // Navigation Properties
     public Tournament Tournament { get; set; } = null!;
     public Sponsor Sponsor { get; set; } = null!;
-}
-
-public interface ITournamentSponsorRepository : IGenericRepository<TournamentSponsor>
-{
-    Task<TournamentSponsor?> GetByTournamentAndSponsorAsync(int tournamentId, int sponsorId);
-    Task<IEnumerable<TournamentSponsor>> GetByTournamentAsync(int tournamentId);
 }

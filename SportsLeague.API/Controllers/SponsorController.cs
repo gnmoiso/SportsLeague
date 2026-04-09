@@ -12,13 +12,16 @@ namespace SportsLeague.API.Controllers;
 public class SponsorController : ControllerBase
 {
     private readonly ISponsorService _sponsorService;
+    private readonly ITournamentSponsorService _tournamentSponsorService;
     private readonly IMapper _mapper;
 
     public SponsorController(
         ISponsorService sponsorService,
+        ITournamentSponsorService tournamentSponsorService,
         IMapper mapper)
     {
         _sponsorService = sponsorService;
+        _tournamentSponsorService = tournamentSponsorService;
         _mapper = mapper;
     }
 
@@ -112,6 +115,98 @@ public class SponsorController : ControllerBase
         catch (InvalidOperationException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Obtiene todos los torneos donde patrocina un sponsor
+    /// </summary>
+    /// <param name="id">ID del patrocinador</param>
+    /// <returns>Lista de torneos patrocinados</returns>
+    [HttpGet("{id}/tournaments")]
+    public async Task<ActionResult<IEnumerable<TournamentSponsorResponseDTO>>> GetTournamentsBySponsor(int id)
+    {
+        try
+        {
+            // Validar que el sponsor exista
+            var sponsor = await _sponsorService.GetByIdAsync(id);
+            if (sponsor == null)
+                return NotFound(new { message = $"Patrocinador con ID {id} no encontrado" });
+
+            var tournaments = await _tournamentSponsorService.GetBySponsorIdAsync(id);
+            var tournamentsDto = _mapper.Map<IEnumerable<TournamentSponsorResponseDTO>>(tournaments);
+            return Ok(tournamentsDto);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Vincula un sponsor a un torneo
+    /// </summary>
+    /// <param name="id">ID del patrocinador</param>
+    /// <param name="dto">Datos del torneo y contrato</param>
+    [HttpPost("{id}/tournaments")]
+    public async Task<ActionResult<TournamentSponsorResponseDTO>> LinkToTournament(int id, LinkSponsorToTournamentDTO dto)
+    {
+        try
+        {
+            // Validar que el sponsor exista
+            var sponsor = await _sponsorService.GetByIdAsync(id);
+            if (sponsor == null)
+                return NotFound(new { message = $"Patrocinador con ID {id} no encontrado" });
+
+            var linkedTournament = await _tournamentSponsorService
+                .LinkSponsorToTournamentAsync(dto.TournamentId, id, dto.ContractAmount);
+
+            var responseDto = _mapper.Map<TournamentSponsorResponseDTO>(linkedTournament);
+
+            return CreatedAtAction(
+                nameof(GetTournamentsBySponsor),
+                new { id = id },
+                responseDto);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Desvincula un sponsor de un torneo
+    /// </summary>
+    /// <param name="id">ID del patrocinador</param>
+    /// <param name="tournamentId">ID del torneo</param>
+    [HttpDelete("{id}/tournaments/{tournamentId}")]
+    public async Task<ActionResult> UnlinkFromTournament(int id, int tournamentId)
+    {
+        try
+        {
+            // Validar que el sponsor exista
+            var sponsor = await _sponsorService.GetByIdAsync(id);
+            if (sponsor == null)
+                return NotFound(new { message = $"Patrocinador con ID {id} no encontrado" });
+
+            await _tournamentSponsorService.UnlinkSponsorFromTournamentAsync(tournamentId, id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
         }
     }
 }

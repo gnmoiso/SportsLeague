@@ -15,6 +15,8 @@ public class LeagueDbContext : DbContext
     public DbSet<Referee> Referees => Set<Referee>();
     public DbSet<Tournament> Tournaments => Set<Tournament>();
     public DbSet<TournamentTeam> TournamentTeams => Set<TournamentTeam>();
+    public DbSet<Sponsor> Sponsors => Set<Sponsor>();
+    public DbSet<TournamentSponsor> TournamentSponsors => Set<TournamentSponsor>();
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -165,16 +167,39 @@ public class LeagueDbContext : DbContext
             _ = entity.Property(s => s.UpdatedAt)
                 .IsRequired(false);
 
-
-            // Índice único: un patrocinador solo puede patrocinar a un equipo o torneo específico
-            _ = entity.HasIndex(s => new { s.Name })
+            // Índice único: nombre de patrocinador único
+            _ = entity.HasIndex(s => s.Name)
                   .IsUnique();
-
-            //
-
         });
 
+        // ── TournamentSponsor Configuration ──
+        _ = modelBuilder.Entity<TournamentSponsor>(entity =>
+        {
+            _ = entity.HasKey(ts => ts.Id);
+            _ = entity.Property(ts => ts.ContractAmount)
+                  .IsRequired()
+                  .HasPrecision(18, 2);
+            _ = entity.Property(ts => ts.CreatedAt)
+                  .IsRequired();
+            _ = entity.Property(ts => ts.UpdatedAt)
+                  .IsRequired(false);
 
+            // Relación con Tournament
+            _ = entity.HasOne(ts => ts.Tournament)
+                  .WithMany(t => t.TournamentSponsors)
+                  .HasForeignKey(ts => ts.TournamentId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            // Relación con Sponsor
+            _ = entity.HasOne(ts => ts.Sponsor)
+                  .WithMany(s => s.TournamentSponsors)
+                  .HasForeignKey(ts => ts.SponsorId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            // Índice único compuesto: un sponsor solo una vez por torneo
+            _ = entity.HasIndex(ts => new { ts.TournamentId, ts.SponsorId })
+                  .IsUnique();
+        });
     }
 }
 
