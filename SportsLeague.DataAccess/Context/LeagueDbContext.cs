@@ -24,22 +24,22 @@ public class LeagueDbContext : DbContext
         // ── Team Configuration ──
         _ = modelBuilder.Entity<Team>(entity =>
         {
-            _ = entity.HasKey(t => t.Id);
-            _ = entity.Property(t => t.Name)
+            _ = entity.HasKey(s => s.Id);
+            _ = entity.Property(s => s.Name)
                   .IsRequired()
                   .HasMaxLength(100);
-            _ = entity.Property(t => t.City)
+            _ = entity.Property(s => s.City)
                   .IsRequired()
                   .HasMaxLength(100);
-            _ = entity.Property(t => t.Stadium)
+            _ = entity.Property(s => s.Stadium)
                   .HasMaxLength(150);
-            _ = entity.Property(t => t.LogoUrl)
+            _ = entity.Property(s => s.LogoUrl)
                   .HasMaxLength(500);
-            _ = entity.Property(t => t.CreatedAt)
+            _ = entity.Property(s => s.CreatedAt)
                   .IsRequired();
-            _ = entity.Property(t => t.UpdatedAt)
+            _ = entity.Property(s => s.UpdatedAt)
                   .IsRequired(false);
-            _ = entity.HasIndex(t => t.Name)
+            _ = entity.HasIndex(s => s.Name)
                   .IsUnique();
         });
 
@@ -96,22 +96,22 @@ public class LeagueDbContext : DbContext
         // ── Tournament Configuration ──
         _ = modelBuilder.Entity<Tournament>(entity =>
         {
-            _ = entity.HasKey(t => t.Id);
-            _ = entity.Property(t => t.Name)
+            _ = entity.HasKey(s => s.Id);
+            _ = entity.Property(s => s.Name)
                   .IsRequired()
                   .HasMaxLength(150);
-            _ = entity.Property(t => t.Season)
+            _ = entity.Property(s => s.Season)
                   .IsRequired()
                   .HasMaxLength(20);
-            _ = entity.Property(t => t.StartDate)
+            _ = entity.Property(s => s.StartDate)
                   .IsRequired();
-            _ = entity.Property(t => t.EndDate)
+            _ = entity.Property(s => s.EndDate)
                   .IsRequired();
-            _ = entity.Property(t => t.Status)
+            _ = entity.Property(s => s.Status)
                   .IsRequired();
-            _ = entity.Property(t => t.CreatedAt)
+            _ = entity.Property(s => s.CreatedAt)
                   .IsRequired();
-            _ = entity.Property(t => t.UpdatedAt)
+            _ = entity.Property(s => s.UpdatedAt)
                   .IsRequired(false);
         });
 
@@ -142,6 +142,38 @@ public class LeagueDbContext : DbContext
             _ = entity.HasIndex(tt => new { tt.TournamentId, tt.TeamId })
                   .IsUnique();
         });
+
+
+        //-- Sponsor Configuration --
+        _ = modelBuilder.Entity<Sponsor>(entity =>
+        {
+            _ = entity.HasKey(s => s.Id);
+            _ = entity.Property(s => s.Name)
+                  .IsRequired()
+                  .HasMaxLength(150);
+            _ = entity.Property<string>(s => s.ContactEmail)
+                .IsRequired()
+                .HasMaxLength(150);
+            _ = entity.Property(s => s.Phone)
+                .HasMaxLength(20);
+            _ = entity.Property(s => s.WebsiteUrl)
+                .HasMaxLength(150);
+            _ = entity.Property(s => s.Category)
+                .IsRequired();
+            _ = entity.Property(s => s.CreatedAt)
+                .IsRequired();
+            _ = entity.Property(s => s.UpdatedAt)
+                .IsRequired(false);
+
+
+            // Índice único: un patrocinador solo puede patrocinar a un equipo o torneo específico
+            _ = entity.HasIndex(s => new { s.Name })
+                  .IsUnique();
+
+            //
+
+        });
+
 
     }
 }
