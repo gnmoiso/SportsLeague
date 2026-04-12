@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -11,7 +10,7 @@ namespace SportsLeague.DataAccess.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "Sponsors",
                 columns: table => new
                 {
@@ -27,10 +26,10 @@ namespace SportsLeague.DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sponsors", x => x.Id);
+                    _ = table.PrimaryKey("PK_Sponsors", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "TournamentSponsors",
                 columns: table => new
                 {
@@ -44,14 +43,14 @@ namespace SportsLeague.DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TournamentSponsors", x => x.Id);
-                    table.ForeignKey(
+                    _ = table.PrimaryKey("PK_TournamentSponsors", x => x.Id);
+                    _ = table.ForeignKey(
                         name: "FK_TournamentSponsors_Sponsors_SponsorId",
                         column: x => x.SponsorId,
                         principalTable: "Sponsors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
+                    _ = table.ForeignKey(
                         name: "FK_TournamentSponsors_Tournaments_TournamentId",
                         column: x => x.TournamentId,
                         principalTable: "Tournaments",
@@ -59,18 +58,18 @@ namespace SportsLeague.DataAccess.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_Sponsors_Name",
                 table: "Sponsors",
                 column: "Name",
                 unique: true);
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_TournamentSponsors_SponsorId",
                 table: "TournamentSponsors",
                 column: "SponsorId");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_TournamentSponsors_TournamentId_SponsorId",
                 table: "TournamentSponsors",
                 columns: new[] { "TournamentId", "SponsorId" },
@@ -80,10 +79,10 @@ namespace SportsLeague.DataAccess.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "TournamentSponsors");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "Sponsors");
         }
     }
