@@ -11,4 +11,10 @@ public class Team : AuditBase
     // Navigation Property - Colección de jugadores
     public ICollection<Player> Players { get; set; } = [];
     public ICollection<TournamentTeam> TournamentTeams { get; set; } = [];
+
+    // Partidos como local
+    public ICollection<Match> HomeMatches { get; set; } = [];
+    // Partidos como visitante
+    public ICollection<Match> AwayMatches { get; set; } = [];
+
 }

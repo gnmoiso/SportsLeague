@@ -46,6 +46,20 @@ public class MappingProfile : Profile
                 dest => dest.SponsorContactEmail,
                 opt => opt.MapFrom(src => src.Sponsor.ContactEmail));
 
+        // Match mappings
+        _ = CreateMap<MatchRequestDTO, Match>();
+        _ = CreateMap<Match, MatchResponseDTO>()
+            .ForMember(dest => dest.TournamentName,
+                opt => opt.MapFrom(src => src.Tournament.Name))
+            .ForMember(dest => dest.HomeTeamName,
+                opt => opt.MapFrom(src => src.HomeTeam.Name))
+            .ForMember(dest => dest.AwayTeamName,
+                opt => opt.MapFrom(src => src.AwayTeam.Name))
+            .ForMember(dest => dest.RefereeFullName,
+                opt => opt.MapFrom(src =>
+                    src.Referee.FirstName + " " + src.Referee.LastName));
+
+
     }
 }
 

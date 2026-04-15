@@ -13,4 +13,5 @@ public class Tournament : AuditBase
     // Navigation Properties
     public ICollection<TournamentTeam> TournamentTeams { get; set; } = [];
     public ICollection<TournamentSponsor> TournamentSponsors { get; set; } = [];
+    public ICollection<Match> Matches { get; set; } = [];
 }
